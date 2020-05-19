@@ -1,0 +1,2 @@
+# springboot-shiro-jwt-redis-mysql
+这是一个SpringBoot整合shiro权限控制，用redis做cache缓存，通过JWT授权认证的项目。数据持久层采用的是mysql数据库，前端页面展示则采用layUI框架。因为全是静态页面，未采用jsp及Templats模板技术，因此在前端页面按钮级别的权限控制粒度上，需要采用异步获取并回显（本项目中并未异步去取）。同时由于整合了JWT，用户在登陆之后会先获得token的缓存，而shiro默认在有缓存的情况下，不会进入权限获取的doGetAuthorizationInfo(PrincipalCollection principals)方法，需要调整jwttoken的生成顺序，或者在shiro核心配置中关闭缓存。shiro的配置可以采用xml，也可以使用代码方式（springboot约定大于配置，推荐代码实现）。
