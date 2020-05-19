@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>菜单列表</title>
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/layuiadmin/style/admin.css">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">菜单列表</div>
+        <div class="layui-card-body">
+            <form class="layui-form searchForm" lay-filter="searchForm">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <input class="layui-input" type="text" name="keyword" placeholder="检索关键字">
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="level">
+                            <option value="">请选择菜单级别</option>
+                            <option value="1">一级菜单</option>
+                            <option value="2">二级菜单</option>
+                            <option value="3">三级菜单</option>
+                        </select>
+                    </div>
+                    <div class="layui-btn-group">
+                        <button class="layui-btn layui-btn-normal" lay-submit="">搜索</button>
+                        <button class="layui-btn layui-btn-normal add" type="button">新增</button>
+                    </div>
+                </div>
+            </form>
+            <table id="searchTable"></table>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid addPanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane addForm" lay-filter="addForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单级别</label>
+            <div class="layui-input-block">
+                <select name="level" lay-filter="addFormLevel">
+                    <option value="1">一级菜单</option>
+                    <option value="2">二级菜单</option>
+                    <option value="3">三级菜单</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label">菜单链接</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">显示顺序</label>
+            <div class="layui-input-block">
+                <input type="number" name="showIndex" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none;">
+            <label class="layui-form-label">上级菜单</label>
+            <div class="layui-input-block">
+                <select name="parentMenuId" lay-search></select>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="layui-fluid updatePanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane updateForm" lay-filter="updateForm">
+        <input type="hidden" name="id" class="layui-input" lay-verify="required">
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单级别</label>
+            <div class="layui-input-block">
+                <select name="level" lay-filter="updateFormLevel">
+                    <option value="1">一级菜单</option>
+                    <option value="2">二级菜单</option>
+                    <option value="3">三级菜单</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none;">
+            <label class="layui-form-label">菜单链接</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">显示顺序</label>
+            <div class="layui-input-block">
+                <input type="number" name="showIndex" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none;">
+            <label class="layui-form-label">上级菜单</label>
+            <div class="layui-input-block">
+                <select name="parentMenuId"></select>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs" lay-event="update">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
+</script>
+<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/common.js"></script>
+<script type="text/javascript">
+    (function () {
+        layui.use(['form', 'layedit', 'laydate', 'table', 'element'], function () {
+            var form = layui.form, table = layui.table, layer = layui.layer;
+            var searchTable = table.render({
+                elem: '#searchTable',
+                title: '菜单列表',
+                url: 'manage/menu/getForPagination',
+                method: 'post',
+                headers: {Authentication: localStorage.authentication},
+                where: {
+                    "keyword": $('.searchForm [name="keyword"]').val(),
+                    "level": $('.searchForm [name="level"]').val()
+                },
+                parseData: parseDataForTable,
+                response: {statusCode: 200},
+                cols: [[
+                    {field: 'NAME', title: '菜单名称'},
+                    {
+                        field: 'LEVEL', title: '菜单级别', templet: function (d) {
+                            return d['LEVEL'] === 1 ? '一级菜单' : d['LEVEL'] === 2 ? '二级菜单' : d['LEVEL'] === 3?'三级菜单':'';
+                        }
+                    },
+                    {field: 'PARENT_MENU_NAME', title: '上级菜单'},
+                    {field: 'SHOW_INDEX', title: '显示顺序'},
+                    {fixed: 'right', title: '操作', toolbar: '#rowBar', width: 150}
+                ]],
+                toolbar: true,
+                page: true,
+                limits: [10, 20, 50, 100]
+            });
+            form.on('submit(searchForm)', function (data) {
+                searchTable.reload({
+                    where: {
+                        "keyword": $('.searchForm [name="keyword"]').val(),
+                        "level": $('.searchForm [name="level"]').val()
+                    },
+                    page: {curr: 1}
+                });
+                return false;
+            });
+
+            $('.add').on('click', function () {
+                layer.open({
+                    area: '450px',
+                    type: 1,
+                    title: '新增菜单',
+                    content: $('.addPanel'),
+                    btn: ['确定', '取消'],
+                    yes: function (index) {
+                        ajax("manage/menu/addMenu", $('.addForm').serializeArray(), function () {
+                            layer.close(index);
+                            layer.msg('操作成功');
+                            resetForm($('.addForm'));
+                            searchTable.reload();
+                            refreshParentMenuSelect();
+                        });
+                    }
+                });
+            });
+            form.on('select(addFormLevel)', function (data) {
+                if (data.value === '1') {
+                    $('.addPanel [name="url"]').parents('.layui-form-item').hide();
+                    $('.addPanel [name="parentMenuId"]').parents('.layui-form-item').hide();
+                } else {
+                    $('.addPanel [name="url"]').parents('.layui-form-item').show();
+                    $('.addPanel [name="parentMenuId"]').parents('.layui-form-item').show();
+                }
+            });
+            form.on('select(updateFormLevel)', function (data) {
+                if (data.value === '1') {
+                    $('.updatePanel [name="url"]').parents('.layui-form-item').hide();
+                    $('.updatePanel [name="parentMenuId"]').parents('.layui-form-item').hide();
+                } else {
+                    $('.updatePanel [name="url"]').parents('.layui-form-item').show();
+                    $('.updatePanel [name="parentMenuId"]').parents('.layui-form-item').show();
+                }
+            });
+            refreshParentMenuSelect();
+            table.on('tool', function (obj) {
+                var data = obj.data;
+                switch (obj.event) {
+                    case 'update':
+                        $('.updateForm [name="id"]').val(data.ID);
+                        $('.updateForm [name="name"]').val(data.NAME);
+                        $('.updateForm [name="level"]').val(data.LEVEL);
+                        $('.updateForm [name="url"]').val(data.URL);
+                        $('.updateForm [name="showIndex"]').val(data.SHOW_INDEX);
+                        $('.updateForm [name="parentMenuId"]').val(data.PARENT_MENU_ID);
+                        if (data.LEVEL === 1) {
+                            $('.updatePanel [name="url"]').parents('.layui-form-item').hide();
+                            $('.updatePanel [name="parentMenuId"]').parents('.layui-form-item').hide();
+                        } else {
+                            $('.updatePanel [name="url"]').parents('.layui-form-item').show();
+                            $('.updatePanel [name="parentMenuId"]').parents('.layui-form-item').show();
+                        }
+                        form.render();
+                        layer.open({
+                            area: '450px',
+                            type: 1,
+                            title: '编辑菜单',
+                            content: $('.updatePanel'),
+                            btn: ['确定', '取消'],
+                            yes: function (index) {
+                                ajax("manage/menu/updateMenu", $('.updateForm').serializeArray(), function () {
+                                    layer.close(index);
+                                    layer.msg('操作成功');
+                                    searchTable.reload();
+                                    refreshParentMenuSelect();
+                                });
+                            }
+                        });
+                        break;
+                    case 'delete':
+                        layer.confirm('确定要删除此菜单?', function (index) {
+                            ajax("manage/menu/deleteMenu", {
+                                "id": data.ID
+                            }, function () {
+                                layer.msg('操作成功');
+                                searchTable.reload();
+                                refreshParentMenuSelect();
+                            });
+                        });
+                        break;
+                }
+            });
+
+            function refreshParentMenuSelect() {
+                ajax('manage/menu/getTopLevelMenuList', null, function (menuList) {
+                    var menuElementListForAdd = [];
+                    var menuElementListForUpdate = [];
+                    $.each(menuList, function (index, menu) {
+                        menuElementListForAdd.push($('<option value=""></option>').text(menu.name).attr('value', menu.id));
+                        menuElementListForUpdate.push($('<option value=""></option>').text(menu.name).attr('value', menu.id));
+                    });
+                    $('.addPanel [name="parentMenuId"]').html(menuElementListForAdd);
+                    $('.updatePanel [name="parentMenuId"]').html(menuElementListForUpdate);
+                    form.render();
+                });
+            }
+        });
+    })();
+</script>
+</body>
+</html>

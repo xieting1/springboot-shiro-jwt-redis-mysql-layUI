@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理系统</title>
+    <link rel="stylesheet" th:href="@{/static/layuiadmin/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/static/layuiadmin/style/admin.css}" media="all">
+    <link rel="stylesheet" th:href="@{/static/layuiadmin/style/login.css}" media="all">
+    <style type="text/css">
+        .layadmin-user-login {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+
+            min-height: 650px;
+            min-width: 980px;
+
+            background-image: url('/static/image/login_.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        /*.main-left {
+            position: absolute;
+            background-color: #F2F2FE;
+            width: 61.8%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            box-sizing: border-box;
+
+            background-image: url('static/manage/image/login_left.png');
+            background-repeat: no-repeat;
+            background-size: 80% auto;
+            background-position: center top 16.5%;
+        }*/
+        .layadmin-user-login-header h2{
+            color: #fff; margin-bottom: 30px;
+        }
+
+        .layadmin-user-login-main {
+            position: absolute;
+            padding: 0 30px;
+            padding-top: 50px;padding-bottom: 25px;
+            background-color: rgba(255,255,255,.25);
+            right: 8%; width: auto;
+            border-radius: 20px;
+            min-width: 330px;
+            top: 50%; margin-top: -320px;
+        }
+
+        .layadmin-user-login-header {
+            width:  80%;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .layadmin-user-login-header img {
+            max-width: 100%;
+        }
+
+        .layadmin-user-login-box .layui-form-item {
+            width: 380px; margin: auto;
+            margin-bottom: 30px;
+        }
+        .layadmin-user-login-box{ padding: 5px; }
+        .layadmin-user-login-box .layui-form-item .layui-input {
+            background-color: #FAFAFA;
+        }
+
+        .layadmin-user-login-box .layui-form-item .layui-btn {
+            background-color: #254AFF;
+            width: 55%; height: 52px;
+            border-radius: 52px; font-size: 20px;
+        }
+        .layadmin-user-login-box  .layui-input{
+            height: 52px; border-radius: 52px;
+        }
+        .layadmin-user-login-icon{
+            height: 36px; top: 50%;
+            margin-top: -18px; left: 12px;
+        }
+        .layadmin-user-login-body .layui-form-item .layui-input{
+            padding-left: 60px;
+        }
+        .layadmin-user-login-body .layui-form-item  .layui-row{
+            background-color: #fff;
+            height: 52px; border-radius: 52px;
+            padding-right: 12px;
+        }
+        .layadmin-user-login-body .layui-form-item  .layui-row .layui-input{
+            border:0px; background-color: #fff;
+        }
+        .layadmin-user-login-codeimg{ margin-top: 7px; }
+        .logo{
+            position: absolute;
+            left: 20px; top: 20px;
+        }
+        .cpText{
+            font-size: 54px; color: #fff;
+            position: absolute;
+            height: 70px; line-height: 70px;
+            left: 12%; top: 45%;
+            margin-top: -20px;
+            letter-spacing: 10px;
+        }
+        @media screen and (max-width: 1600px) {
+            .layadmin-user-login-box .layui-form-item{ width: 340px; }
+            .layadmin-user-login-main{ margin-top: -280px; }
+        }
+        @media screen and (max-width: 1400px) {
+            .layadmin-user-login-box .layui-form-item{ width: 340px; }
+            .layadmin-user-login-main{ margin-top: -280px; }
+        }
+        @media screen and (max-width: 1200px) {
+            .layadmin-user-login-box .layui-form-item{ width: 300px; }
+            .layadmin-user-login-main{ margin-top: -240px; }
+        }
+        @media screen and (max-width: 1000px) {
+            .layadmin-user-login-box .layui-form-item{ width: 260px; }
+            .layadmin-user-login-main{ margin-top: -200px; }
+        }
+        @media screen and (max-width: 980px) {
+            .layadmin-user-login-box .layui-form-item{ width: 240px; }
+            .layadmin-user-login-main{ margin-top: -180px; }
+        }
+    </style>
+</head>
+<body>
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+    <!--<div class="logo"><img src="static/manage/image/logo.png" /></div>-->
+    <!--<div class="cpText">勇敢的担当并坚持下去</div>-->
+    <div class="main-left"></div>
+    <div class="layadmin-user-login-main">
+        <div style="height: 8%;"></div>
+        <div class="layadmin-user-login-box layadmin-user-login-header">
+            <h2>登录</h2> 
+        </div>
+        <div style="height: 4%;"></div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item" style="">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username"></label>
+                <input type="text" name="loginname" id="loginname" lay-verify="required" placeholder="用户名"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"></label>
+                <input type="password" name="password" id="password" lay-verify="required" placeholder="密码"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-row">
+                    <div class="layui-col-xs7">
+                        <label class="layadmin-user-login-icon layui-icon layui-icon-vercode"></label>
+                        <input type="text" name="code" id="code" lay-verify="required" placeholder="图形验证码"
+                               class="layui-input">
+                    </div>
+                    <div class="layui-col-xs5">
+                        <div style="margin-left: 10px;">
+                            <img src="" id="codeImg" class="layadmin-user-login-codeimg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-top: 12.8%;">
+                <button class="layui-btn layui-btn-fluid" lay-submit="" id="login" lay-filter="LAY-user-login-submit">
+                    登 录
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/static/js/jquery-1.9.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/jquery.cookie.js}"></script>
+<script type="text/javascript" th:src="@{/static/layuiadmin/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/jsencrypt.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/sha256.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/common.js}"></script>
+<script type="text/javascript">
+    (function () {
+        // var companyId = getQueryString("companyId");
+        // ajax("manage/common/getCompanyName", {"companyId": companyId}, function (data) {
+        //     //$('.companyName').text(data[1]);
+        //     localStorage.companyId = data[0];
+        //     localStorage.companyName = data[1];
+        // });
+        // browserRedirect();
+        layui.use(['form', 'layedit', 'laydate', 'table', 'element'], function () {
+            var layer = layui.layer;
+            //客户端标识
+            var identifier = uuid(32, 16);
+            //刷新图形验证码
+            $('#codeImg').on('click', function () {
+                $(this).attr("src", "/common/getVerifyCode?identifier=" + identifier + "&t=" + new Date().getTime());
+            }).click();
+            //用户登录
+            $('#login').on('click', login);
+            $(document).keyup(function (event) {
+                if (event.keyCode === 13) $("#login").click();
+            });
+
+            function login() {
+                var name = $('[name="loginname"]').val();
+                var password = $('[name="password"]').val();
+                var verifyCode = $('[name="code"]').val();
+                if (isBlank(name)) {
+                    layer.msg('用户名不能为空');
+                } else if (isBlank(password)) {
+                    layer.msg('密码不能为空');
+                } else if (isBlank(verifyCode)) {
+                    layer.msg('验证码不能为空');
+                } else {
+                    ajax("/common/getPasswordSalt", {"identifier": identifier}, function (publicKey) {
+                        ajax("/index/login", {
+                            "name": name,
+                            "password": encrypt_rsa(name + '_' + password, publicKey),
+                            "identifier": identifier,
+                            "verifyCode": verifyCode
+                        }, function (data) {
+                            localStorage.authentication = data.token;
+                            localStorage.userId = data.userId;
+                            localStorage.userName = data.userName;
+                            localStorage.xpro2Role = data.roleId;
+                            top.location.href = '/static/index.html';
+                        },function(){
+                            $('#codeImg').click();
+                        });
+                    });
+                }
+            }
+        });
+    })();
+
+
+    function browserRedirect() {
+        var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+        var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+        var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+        var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+        var bIsAndroid = sUserAgent.match(/android/i) == "android";
+        var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+        var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+        if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+            //跳转移动端页面
+            window.location.href="static/manage/html/DingTalk/login.html";
+        } else {
+            //跳转pc端页面
+            //window.location.href="";
+        }
+    }
+</script>
+</body>
+</html>

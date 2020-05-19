@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>综合管理平台</title>
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/static/layuiadmin/style/admin.css" media="all">
+    <!-- <link rel="stylesheet" href="static/manage/css/layui-theme-custom.css" media="all"> -->
+    <!-- <link rel="stylesheet" href="static/manage/layuiadmin/style/login.css" media="all"> -->
+    <style type="text/css">
+        .layui-form-select dl{ top:42px; }
+        .layui-form-selectup dl{ bottom: initial;}
+    </style>
+</head>
+<body class="layui-layout-body">
+<div id="LAY_app">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <!-- 头部区域 -->
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect>
+                    <a href="javascript:void(0)" layadmin-event="flexible" title="侧边伸缩">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:void(0)" layadmin-event="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:void(0)" layadmin-event="theme">
+                        <i class="layui-icon layui-icon-theme"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                    <a href="javascript:void(0)" layadmin-event="fullscreen">
+                        <i class="layui-icon layui-icon-screen-full"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:void(0)">
+                        <cite id="user_info"></cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:void(0)" class="changePassword">修改密码</a></dd>
+                        <hr>
+                        <dd style="text-align: center;"><a class="logout" href="javascript:void(0)">退出</a></dd>
+                    </dl>
+                </li>
+
+            </ul>
+        </div>
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+            <div class="layui-side-scroll">
+                <div class="layui-logo" lay-href="/static/home.html">
+                    <span id="headtext">综合管理平台</span>
+                    <!-- <img src=""> -->
+                </div>
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
+                    lay-filter="layadmin-system-side-menu">
+                </ul>
+            </div>
+        </div>
+        <!-- 页面标签 -->
+        <div class="layadmin-pagetabs" id="LAY_app_tabs">
+            <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
+            <div class="layui-icon layadmin-tabs-control layui-icon-down">
+                <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
+                    <li class="layui-nav-item" lay-unselect>
+                        <a href="javascript:void(0)"></a>
+                        <dl class="layui-nav-child layui-anim-fadein">
+                            <dd layadmin-event="closeThisTabs"><a href="javascript:void(0)">关闭当前标签页</a></dd>
+                            <dd layadmin-event="closeOtherTabs"><a href="javascript:void(0)">关闭其它标签页</a></dd>
+                            <dd layadmin-event="closeAllTabs"><a href="javascript:void(0)">关闭全部标签页</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+            <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
+                <ul class="layui-tab-title" id="LAY_app_tabsheader">
+                    <li lay-id="/xpro/home" lay-attr="/xpro/home" class="layui-this"><i
+                            class="layui-icon layui-icon-home"></i></li>
+                </ul>
+            </div>
+        </div>
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body">
+            <div class="layadmin-tabsbody-item layui-show">
+                <iframe src="/static/home.html" frameborder="0" class="layadmin-iframe"></iframe>
+            </div>
+        </div>
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+    </div>
+</div>
+<div class="layui-fluid changePasswordPanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane changePasswordForm" lay-filter="changePasswordForm">
+        <input type="hidden" name="id" class="layui-input" lay-verify="required">
+        <div class="layui-form-item">
+            <label class="layui-form-label">旧密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="old_password" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="new_password" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="confirm_password" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/jsencrypt.min.js"></script>
+<script type="text/javascript" src="/static/js/sha256.js"></script>
+<script type="text/javascript" src="/static/js/common.js?v=1"></script>
+<script type="text/javascript">
+    (function () {
+        var domain = document.domain;
+
+        layui.config({
+            base: '/static/layuiadmin/'
+        }).extend({
+            index: '/lib/index'
+        }).use('index');
+        layui.use(['form', 'layedit', 'laydate', 'table', 'element', 'admin'], function () {
+            var form = layui.form, table = layui.table, layer = layui.layer, element = layui.element,
+                admin = layui.admin;
+            if(domain=='admin.cloudsvc.cn'){
+                admin.initTheme(11);
+            }else{
+                admin.initTheme(9);
+            }
+            //admin.theme({"color": {"main": "#20222A", "selected": "#009688", "alias": "ocean-header", "index": 5}});
+
+            //客户端标识
+            var identifier = uuid(32, 16);
+            $('#user_info').text(localStorage.userName);
+
+            $.ajax({
+                type: "POST",
+                url: '/index/getCurrentAdminMenuList',
+                 data: {userId:localStorage.userId},
+                headers:{Authentication: localStorage.authentication},
+                success:function(menuList){
+                    var menuElementList = [];
+                    var menuData = menuList.data;
+                    console.log(menuData);
+                    $.each(menuData, function (index, menu) {
+                        if (menu['LEVEL'] === 1) {
+                            var menuElement = $('<li class="layui-nav-item"><a href="javascript:void(0)"><i class="layui-icon"></i><cite></cite></a></li>');
+                            menuElement.find('.layui-nav-item').attr('id', menu['ID']);
+                            menuElement.find('a').attr('lay-tips', menu['NAME']);
+                            if(index%2==0){
+                                menuElement.find('a').append("<i class=\"layui-icon layui-icon-star-fill\"></i>");
+                            }else{
+                                menuElement.find('a').append("<i class=\"layui-icon layui-icon-star\"></i>");
+                            }
+                            menuElement.find('cite').text(menu['NAME']);
+                            var sub1dl=$('<dl class="layui-nav-child"></dl>');
+                            $.each(menuData, function (index, subMenu) {
+                                if (subMenu['LEVEL'] === 2 && subMenu['PARENT_MENU_ID'] === menu['ID']) {
+                                    var subMenuElement = $('<dd data-name="console"><a></a></dd>');
+                                    var url = subMenu['URL'];
+                                    if(url==''){
+                                        subMenuElement = $('<dd  data-name="form"><a href="javascript:;"></a></dd>');
+                                        subMenuElement.attr('id', subMenu['ID']);
+                                        subMenuElement.find('a').text(subMenu['NAME']);
+                                    }else{
+                                        subMenuElement.attr('id', subMenu['ID']);
+                                        subMenuElement.find('a').attr('lay-href', subMenu['URL']).text(subMenu['NAME']);
+                                    }
+
+                                    var sub3Flag=false;
+                                    var sub3dl=$('<dl class="layui-nav-child"></dl>');
+                                    $.each(menuData, function (index, sub3Menu) {
+                                        if (sub3Menu['LEVEL'] === 3 && sub3Menu['PARENT_MENU_ID'] === subMenu['ID']) {
+                                            sub3Flag=true;
+                                            var sub3MenuElement = $('<dd><a></a></dd>');
+                                            sub3MenuElement.attr('id', sub3Menu['ID']);
+                                            sub3MenuElement.find('a').attr('lay-href', sub3Menu['URL']).text(sub3Menu['NAME']);
+                                            sub3dl.append(sub3MenuElement);
+                                            subMenuElement.append(sub3dl);
+                                        }
+                                    });
+
+                                    sub1dl.append(subMenuElement);
+                                    menuElement.append(sub1dl);
+                                }
+                            });
+                            menuElementList.push(menuElement);
+                            console.log(menuElementList);
+                        }
+                    });
+                    $('.layui-side-menu .layui-nav-tree').html(menuElementList);
+                    element.render();
+                }
+            });
+        });
+    })();
+</script>
+</body>
+</html>

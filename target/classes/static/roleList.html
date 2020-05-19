@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>角色列表</title>
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/layuiadmin/style/admin.css">
+    <style>
+        .top-level-menu {
+            display: inline-block;
+            height: 22px;
+            line-height: 22px;
+            padding: 0 5px;
+            font-size: 12px;
+            color: #fff;
+            background-color: #1E9FFF;
+            border: none;
+            border-radius: 2px;
+            margin-left: 10px;
+        }
+
+        .second-level-menu {
+            display: inline-block;
+            height: 22px;
+            line-height: 22px;
+            padding: 0 5px;
+            font-size: 12px;
+            color: #fff;
+            background-color: #009688;
+            border: none;
+            border-radius: 2px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">角色列表</div>
+        <div class="layui-card-body">
+            <form class="layui-form searchForm" lay-filter="searchForm">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <input class="layui-input" type="text" name="keyword" placeholder="检索关键字">
+                    </div>
+                    <div class="layui-btn-group">
+                        <button class="layui-btn layui-btn-normal" lay-submit="">搜索</button>
+                        <button class="layui-btn layui-btn-normal add" type="button">新增</button>
+                    </div>
+                </div>
+            </form>
+            <table id="searchTable"></table>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid addPanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane addForm" lay-filter="addForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="remark" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+      <!--  <div class="layui-form-item">
+            <label class="layui-form-label">区分社区</label>
+            <div class="layui-input-block">
+                <select name="isZone">
+                    <option value="0">不区分</option>
+                    <option value="1">区分</option>
+                </select>
+            </div>
+        </div>-->
+    </form>
+</div>
+<div class="layui-fluid updatePanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane updateForm" lay-filter="updateForm">
+        <input type="hidden" name="id" class="layui-input" lay-verify="required">
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="remark" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <label class="layui-form-label">区分社区</label>
+            <div class="layui-input-block">
+                <select name="isZone">
+                    <option value="0">不区分</option>
+                    <option value="1">区分</option>
+                </select>
+            </div>
+        </div>-->
+    </form>
+</div>
+<div class="layui-fluid menuManagePanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane menuManageForm" lay-filter="menuManageForm">
+        <input type="hidden" name="id" class="layui-input" lay-verify="required">
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required" readonly="readonly">
+            </div>
+        </div>
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>权限</legend>
+            <div class="layui-field-box">
+                <div class="layui-collapse"></div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+<script type="text/html" id="rowBar">
+    <a class="layui-btn layui-btn-xs" lay-event="update">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="menuManage">权限管理</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
+</script>
+<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/common.js"></script>
+<script type="text/javascript">
+    (function () {
+        layui.use(['form', 'layedit', 'laydate', 'table', 'element'], function () {
+            var form = layui.form, table = layui.table, layer = layui.layer, element = layui.element;
+            var searchTable = table.render({
+                elem: '#searchTable',
+                title: '角色列表',
+                url: 'manage/role/getForPagination',
+                method: 'post',
+                headers: {Authentication: localStorage.authentication},
+                where: {
+                    "keyword": $('.searchForm [name="keyword"]').val()
+                },
+                parseData: parseDataForTable,
+                response: {statusCode: 200},
+                cols: [[
+                    {field: 'NAME', title: '角色名称'},
+                    {field: 'REMARK', title: '角色备注'},
+                    {
+                        field: 'MENU_DATA', title: '权限数据', templet: function (d) {
+                            return renderMenuData(d['MENU_DATA']);
+                        }
+                    },
+                    {fixed: 'right', title: '操作', toolbar: '#rowBar', width: 200}
+                ]],
+                toolbar: true,
+                page: true,
+                limits: [10, 20, 50, 100]
+            });
+            form.on('submit(searchForm)', function (data) {
+                searchTable.reload({
+                    where: {
+                        "keyword": $('.searchForm [name="keyword"]').val()
+                    },
+                    page: {curr: 1}
+                });
+                return false;
+            });
+
+            $('.add').on('click', function () {
+                layer.open({
+                    area: '800px',
+                    type: 1,
+                    title: '新增角色',
+                    content: $('.addPanel'),
+                    btn: ['确定', '取消'],
+                    yes: function (index) {
+                        ajax("manage/role/addRole", $('.addForm').serializeArray(), function () {
+                            layer.close(index);
+                            layer.msg('操作成功');
+                            resetForm($('.addForm'));
+                            searchTable.reload();
+                        });
+                    }
+                });
+            });
+            refreshMenuInputList();
+            table.on('tool', function (obj) {
+                var data = obj.data;
+                switch (obj.event) {
+                    case 'update':
+                        $('.updatePanel [name="id"]').val(data.ID);
+                        $('.updatePanel [name="name"]').val(data.NAME);
+                        $('.updatePanel [name="remark"]').val(data['REMARK']);
+                        $('.updatePanel [name="isZone"]').val(data['IS_ZONE'] ? 1 : 0);
+                        form.render('select');
+                        layer.open({
+                            area: '800px',
+                            type: 1,
+                            title: '编辑角色',
+                            content: $('.updatePanel'),
+                            btn: ['确定', '取消'],
+                            yes: function (index) {
+                                ajax("manage/role/updateRole", $('.updateForm').serializeArray(), function () {
+                                    layer.close(index);
+                                    layer.msg('操作成功');
+                                    searchTable.reload();
+                                });
+                            }
+                        });
+                        break;
+                    case 'menuManage':
+                        $('.menuManagePanel [name="id"]').val(data.ID);
+                        $('.menuManagePanel [name="name"]').val(data.NAME);
+                        $('.menuManagePanel .second-level-menu-input').each(function (index, element) {
+                            if ($(element).is(':checked')) {
+                                $(element).next().click();
+                            }
+                        });
+                        $.each(getMenuIdList(data['MENU_DATA']), function (index, menuId) {
+                            var element = $('.menuManagePanel .second-level-menu-input[data-id="' + menuId + '"]');
+                            if (element.length > 0 && !element.is(':checked')) {
+                                element.next().click();
+                            }
+                        });
+                        layer.open({
+                            area: '800px',
+                            type: 1,
+                            title: '权限管理',
+                            content: $('.menuManagePanel'),
+                            btn: ['确定', '取消'],
+                            yes: function (index) {
+                                var menuIdList = [];
+                                $('.menuManagePanel .second-level-menu-input:checked').each(function (index, element) {
+                                    menuIdList.push($(element).attr('data-id'));
+                                    menuIdList.push($(element).parents('.layui-colla-item').find('.top-level-menu-input').attr('data-id'));
+                                });
+                                ajax("manage/role/updateRoleMenu", {
+                                    id: $('.menuManagePanel [name="id"]').val(),
+                                    menuIds: unique(menuIdList).join(',')
+                                }, function () {
+                                    layer.close(index);
+                                    layer.msg('操作成功');
+                                    searchTable.reload();
+                                });
+                            }
+                        });
+                        break;
+                    case 'delete':
+                        layer.confirm('确定要删除此角色?', function (index) {
+                            ajax("manage/role/deleteRole", {
+                                "id": data.ID
+                            }, function () {
+                                layer.msg('操作成功');
+                                searchTable.reload();
+                            });
+                        });
+                        break;
+                }
+            });
+
+            function getMenuIdList(data) {
+                var menuIdList = [];
+                if (!isBlank(data)) {
+                    $.each(data.split(','), function (index, menu) {
+                        menuIdList.push(menu.split('##')[0])
+                    });
+                }
+                return unique(menuIdList);
+            }
+
+            function refreshMenuInputList() {
+                ajax('manage/menu/getMenuList', null, function (menuList) {
+                    var elementList = [];
+                    $.each(menuList, function (index, menu) {
+                        if (menu['level'] === 1) {
+                            var element = $('<div class="layui-colla-item"><h2 class="layui-colla-title"></h2><div class="layui-colla-content layui-show"></div></div>');
+                            element.find('.layui-colla-title').append($('<label class="top-level-menu-input"></label>').text(menu['name']).attr('data-id', menu['id']));
+                            $.each(menuList, function (index, subMenu) {
+                                if (subMenu['level'] === 2 && menu['id'] === subMenu['parentMenuId']) {
+                                    element.find('.layui-colla-content').append($('<input class="second-level-menu-input" type="checkbox" lay-skin="primary">').attr('title', subMenu['name']).attr('data-id', subMenu['id']));
+                                    $.each(menuList, function (index, sub3Menu) {
+                                        if (sub3Menu['level'] === 3 && subMenu['id'] === sub3Menu['parentMenuId']) {
+                                            element.find('.layui-colla-content').append($('<input class="second-level-menu-input" type="checkbox" lay-skin="primary">').attr('title', sub3Menu['name']).attr('data-id', sub3Menu['id']));
+                                        }
+                                    });
+                                }
+                            });
+                            elementList.push(element.clone());
+                        }
+                    });
+                    $('.menuManagePanel .layui-collapse').html(elementList);
+                    element.render();
+                    form.render();
+                });
+            }
+
+            function renderMenuData(data) {
+                if (isBlank(data)) return '';
+                var menuDataList = [];
+                $.each(data.split(','), function (index, menu) {
+                    var menuData = {};
+                    menuData.menuId = menu.split('##')[0];
+                    menuData.menuName = menu.split('##')[1];
+                    menuData.level = menu.split('##')[2];
+                    menuData.parentMenuId = menu.split('##')[3];
+                    menuDataList.push(menuData);
+                });
+                var menuElementList = [];
+                $.each(menuDataList, function (index, menuData) {
+                    if (menuData.level === '1') {
+                        menuElementList.push($('<span></span>').addClass('top-level-menu').text(menuData.menuName).prop("outerHTML"));
+                        $.each(menuDataList, function (index, subMenuData) {
+                            if (subMenuData.level === '2' && menuData.menuId === subMenuData.parentMenuId) {
+                                menuElementList.push($('<span></span>').addClass('second-level-menu').text(subMenuData.menuName).prop("outerHTML"));
+                            }
+                        });
+                    }
+                });
+                return menuElementList.join('');
+            }
+        });
+    })();
+</script>
+</body>
+</html>

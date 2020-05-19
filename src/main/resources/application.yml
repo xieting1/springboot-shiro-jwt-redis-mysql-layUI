@@ -1,0 +1,172 @@
+
+server:
+    port: 10100
+
+#eureka:
+#client:
+#serviceUrl:
+#defaultZone: http://116.62.135.136:10000/eureka/  #�����Ƶ�ַ   http://192.168.1.128:10000/eureka/
+
+#jasypt:
+#encryptor:
+#password: yupite
+
+spring:
+    #请求路径的过滤
+    mvc:
+        static-path-pattern: /static/**
+
+#    #服务名
+#    application:
+#        name: authPlatform
+
+    #redis
+    redis:
+        host: 101.200.169.9  #阿里云地址
+        port: 6379
+        password: Xt6090152  #redis密码
+        timeout: 10000
+        jedis:
+            pool:
+                max-wait: 10000
+                min-idle: 20
+                max-idle: 300
+                max-active: 8
+
+    #数据库数据源
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://101.200.169.9:3306/xtTest?useSSL=false&characterEncoding=utf8
+        username: xttest
+        password: 6090152@test  #ENC(wEdhqw5PpsbwVLou8KvspUFk7TN63rEGOyaB9Q0ULso=)
+        druid:
+            # 初始化大小，最小，最大
+            initial-size: 10
+            min-idle: 10
+            max-active: 50
+            # 配置获取连接等待超时的时间,单位是毫秒
+            max-wait: 60000
+            # 配置间隔多久才进行一次检测,检测需要关闭的空闲连接,单位是毫秒
+            time-between-eviction-runs-millis: 60000
+            # 配置一个连接在池中最小生存的时间，单位是毫秒
+            min-evictable-idle-time-millis: 300000
+            validation-query: select 'x'
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            # 是否缓存preparedStatement，也就是PSCache
+            pool-prepared-statements: true
+            max-pool-prepared-statement-per-connection-size: 20
+            max-open-prepared-statements: 20
+            # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+            filters: stat,wall,slf4j
+            # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+            filter:
+                # 配置StatFilter
+                stat:
+                    enabled: true
+                    db-type: mysql
+                    log-slow-sql: true
+                    slow-sql-millis: 3000
+#            web-stat-filter:
+#                enabled: true
+#                url-pattern: /*
+#                exclusions: /druid/*,*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico
+#                session-stat-enable: true
+#                session-stat-max-count: 10
+#            stat-view-servlet:
+#                enabled: true
+#                url-pattern: /druid/*
+#                reset-enable: true
+#                login-username: admin
+#                login-password: admin
+
+        #页面路径配置
+    thymeleaf:
+        #缓冲的配置
+        cache: false
+        check-template: true
+        check-template-location: true
+        #开启MVC thymeleaf 视图解析
+        enabled: true
+        encoding: utf-8
+        #HTML5严格按照HTML范式，这个是非严格的
+        mode: HTML5
+        prefix: classpath:/templates/
+        suffix: .html
+
+#    resources:
+#        #配置静态资源
+#        static-locations:   classpath:/static/
+#        chain:
+#            strategy.content.enabled: true
+#            strategy.content.paths: /**
+
+#
+#http:
+#    multipart:
+#        enabled: true
+#        max-file-size: 10MB
+#        max-request-size: 30MB
+#
+#datasource:
+#name: yupite
+#url: jdbc:mysql://172.16.2.158:3306/yupite?useSSL=false&characterEncoding=utf8 #���ݿ��ð�����˽��
+##jdbc:mysql://192.168.1.5:3306/yupite?useSSL=false&characterEncoding=utf8
+##jdbc:mysql://116.62.135.136:3306/yupite?useSSL=false&characterEncoding=utf8 #���ݿ��ð�����˽��
+#username: yupite
+#password: ENC(wEdhqw5PpsbwVLou8KvspUFk7TN63rEGOyaB9Q0ULso=) #���� ENC(ntTg5b0ffw+AFuY8UJUHGw==)
+## ʹ��druid����Դ
+#type: com.alibaba.druid.pool.DruidDataSource
+#driver-class-name: com.mysql.jdbc.Driver
+#filters: stat
+#maxActive: 20
+#initialSize: 1
+#maxWait: 60000
+#minIdle: 1
+#timeBetweenEvictionRunsMillis: 60000
+#minEvictableIdleTimeMillis: 300000
+#validationQuery: select 'x'
+#testWhileIdle: true
+#testOnBorrow: false
+#testOnReturn: false
+#poolPreparedStatements: true
+#maxOpenPreparedStatements: 20
+#
+#cache:
+#type: ehcache
+#ehcache:
+#config: classpath:/ehcache.xml
+#
+#
+#
+
+#
+##
+mybatis-plus:
+    mapper-locations: classpath:mapping/*.xml
+    type-aliases-package: com.power.authority.authorization.*.entity
+    configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+###pagehelper��ҳ���
+#pagehelper:
+#helperDialect: mysql
+#reasonable: true
+#supportMethodsArguments: true
+#params: count=countSql
+#
+#fdfs:
+#soTimeout: 1500
+#connectTimeout: 600
+#resHost: 116.62.135.136  # �������ϴ���ַ  192.168.1.128
+#storagePort: 88
+#charset: UTF-8
+#thumbImage:             #����ͼ���ɲ���
+#width: 150
+#height: 150
+#trackerList: 116.62.135.136:22122 #�����Ƶ�ַ�˿� 192.168.1.128:22122
+#pool:
+##max-total: 100
+##max-wait-millis: 60
+#jmx-enabled: false

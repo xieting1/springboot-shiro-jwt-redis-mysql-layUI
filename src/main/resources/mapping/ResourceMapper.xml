@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.power.authority.authorization.mapper.ResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.power.authority.authorization.entity.ResourceEntity">
+        <id column="s_id" property="sId" />
+        <result column="s_parent_id" property="sParentId" />
+        <result column="s_name" property="sName" />
+        <result column="s_source_key" property="sSourceKey" />
+        <result column="s_type" property="sType" />
+        <result column="s_source_url" property="sSourceUrl" />
+        <result column="s_level" property="sLevel" />
+        <result column="s_icon" property="sIcon" />
+        <result column="s_is_hide" property="sIsHide" />
+        <result column="s_description" property="sDescription" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        s_id, s_parent_id, s_name, s_source_key, s_type, s_source_url, s_level, s_icon, s_is_hide, s_description, s_create_time, s_update_time
+    </sql>
+
+    <select id="findResourcesByUserId" resultMap="BaseResultMap">
+        select s.* from sys_resource s,sys_role_resource sr,
+	           sys_role r, sys_user_role ru
+	     where s.s_id = sr.resource_id
+	       and sr.role_id = r.r_id
+	       and r.r_id = ru.role_id
+	       and ru.user_id=#{userId}
+    </select>
+
+    <select id="findResourceTreeByUserId" resultType="java.util.Map">
+        select s.s_id ID, s.s_name `NAME`,s.s_source_url URL,s.s_parent_id PARENT_MENU_ID,s.s_level 'LEVEL' from sys_resource s,
+	  sys_role_resource sr,
+	  sys_role r,
+	  sys_user_role ru
+	  where s.s_id = sr.resource_id
+	  and sr.role_id = r.r_id
+	  and r.r_id = ru.role_id
+	  and ru.user_id=#{userId}
+    </select>
+
+    <select id="findByRoleId" resultType="java.util.Map">
+       select s_id sId,
+              s_parent_id sParentId,
+              s_name sName,
+              s_source_key sSourceKey,
+              s_type sType,
+              s_source_url sSourceUrl,
+              s_level sLevel,
+              s_icon sIcon,
+              s_is_hide sIsHide,
+              s_description sDescription
+        from sys_role_resource sr,
+		     sys_resource s
+       where sr.resource_id = s.s_id
+         and sr.role_id = #{rId}
+    </select>
+
+</mapper>

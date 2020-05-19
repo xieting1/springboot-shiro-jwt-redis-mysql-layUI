@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.power.authority.authorization.mapper.RoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.power.authority.authorization.entity.RoleEntity">
+        <id column="r_id" property="rId" />
+        <result column="r_name" property="rName" />
+        <result column="r_description" property="rDescription" />
+        <result column="r_key" property="rKey" />
+        <result column="r_status" property="rStatus" />
+        <result column="u_id" property="uId" />
+        <result column="r_create_time" property="rCreateTime" />
+        <result column="r_update_time" property="rUpdateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        r_id, r_name, r_description, r_key, r_status, u_id, r_create_time, r_update_time
+    </sql>
+
+    <select id="findRoleByUserId" resultType="com.power.authority.authorization.entity.RoleEntity">
+        select r_id rId,
+		       r_name rName,
+		       r_description rDescription,
+		       r_key rKey,
+	           r_status rStatus,
+	           u_id uId
+          from sys_role t1,
+               sys_user_role t2
+         where 1 = 1
+           and t1.r_id = t2.role_id
+           and t2.user_id = #{userId}
+    </select>
+</mapper>

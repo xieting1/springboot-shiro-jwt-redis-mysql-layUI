@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head >
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="/static/layuiadmin/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/layuiadmin/style/admin.css">
+    <style type="text/css">
+    	.layui-layer-page .layui-layer-content{ overflow: inherit !important;}
+    </style>
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">用户列表</div>
+        <div class="layui-card-body">
+            <form class="layui-form searchForm" lay-filter="searchForm">
+                <div class="layui-form-item">
+                    <div class="layui-input-inline">
+                        <input class="layui-input" type="text" name="keyword" placeholder="账号|姓名">
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="type">
+                            <option value="">请选择类型</option>
+                            <option value="2">超级管理员</option>
+                            <option value="3">普通管理员</option>
+                        </select>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="roleId"></select>
+                    </div>
+
+
+                        <div class="layui-btn-group" >
+                            <shiro:hasPermission name="user:add">
+                                <button id="btnAdd" type="button" class="layui-btn layui-btn-normal add">
+                                    <i class="fa fa-user-plus"></i>&nbsp;新增
+                                </button>
+                            </shiro:hasPermission>
+                            <shiro:hasPermission name="user:list">
+                                <button class="layui-btn layui-btn-normal" lay-submit="">
+                                    <i class="fa fa-pencil-square-o"></i>&nbsp;搜索
+                                </button>
+                            </shiro:hasPermission>
+                        </div>
+                    <!--<div class="layui-btn-group">   -->
+                        <!--<button class="layui-btn layui-btn-normal" lay-submit="">搜索</button>-->
+                        <!--<button class="layui-btn layui-btn-normal add" type="button">新增</button>-->
+                    <!--</div>-->
+                </div>
+            </form>
+            <table id="searchTable"></table>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid addPanel" style="display: none;/* padding-bottom: 50px; */">
+    <form class="layui-form layui-form-pane addForm" lay-filter="addForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" class="layui-input" lay-verify="required" autocomplete="off"
+                       onfocus="this.type='password'">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="realName" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block">
+                <select name="roleId" lay-filter="select-role"></select>
+            </div>
+        </div>
+        <div class="layui-form-item companyId">
+            <label class="layui-form-label">所属客户</label>
+            <div class="layui-input-block">
+                <select name="companyId" class="client" lay-search>
+                    <option value="">--请选择--</option>
+                </select>
+            </div>
+        </div>
+        <!--<div class="layui-form-item community-container">-->
+            <!--<label class="layui-form-label">社区</label>-->
+            <!--<div class="layui-input-block">-->
+                <!--<select name="communityId"></select>-->
+            <!--</div>-->
+        <!--</div>-->
+    </form>
+</div>
+<div class="layui-fluid updatePanel" style="display: none;padding-bottom: 50px;">
+    <form class="layui-form layui-form-pane updateForm" lay-filter="updateForm">
+        <input type="hidden" name="id" class="layui-input" lay-verify="required">
+        <div class="layui-form-item">
+            <label class="layui-form-label">账号</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" class="layui-input" lay-verify="required" readonly="readonly">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="realName" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block">
+                <select name="roleId" lay-filter="select-role">></select>
+            </div>
+        </div>
+    </form>
+</div>
+<!--<script type="text/html" id="rowBar">-->
+    <!--{{#  if(d.TYPE === 3 || (!isBlank(localStorage.userType) && parseInt(localStorage.userType) <= d.TYPE) ){ }}-->
+    <!--<a class="layui-btn layui-btn-xs" lay-event="update">编辑</a>-->
+    <!--<a class="layui-btn layui-btn-xs" lay-event="password">重置密码</a>-->
+    <!--{{#  } }}-->
+    <!--{{#  if(d.TYPE === 3){ }}-->
+    <!--<a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>-->
+    <!--{{#  } }}-->
+<!--</script>-->
+<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/layuiadmin/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/jsencrypt.min.js"></script>
+<script type="text/javascript" src="/static/js/sha256.js"></script>
+<script type="text/javascript" src="/static/js/common.js"></script>
+<script type="text/javascript">
+    (function () {
+        var roleZoneMap = {};
+        layui.use(['form', 'layedit', 'laydate', 'table', 'element'], function () {
+            var form = layui.form, table = layui.table, layer = layui.layer;
+            //客户端标识
+            var identifier = uuid(32, 16);
+            var searchTable = table.render({
+                elem: '#searchTable',
+                title: '用户列表',
+                url: '/admin/getForPagination',
+                method: 'post',
+                headers: {Authentication: localStorage.authentication},
+                where: {
+                    "keyword": $('.searchForm [name="keyword"]').val(),
+                    "type": $('.searchForm [name="type"]').val(),
+                    "roleId": $('.searchForm [name="roleId"]').val()
+                },
+                parseData: parseDataForTable,
+                response: {statusCode: 200},
+                cols: [[
+                    {field: 'account', title: '账号'},
+                    {field: 'username', title: '用户名'},
+                    {field: 'description', title: '描述'},
+                    {
+                        field: 'deleteStatus', title: '是否删除', templet: function (d) {
+                            return d['deleteStatus'] === 0 || d['deleteStatus'] === 1 ? '是' : '否';
+                        }
+                    },
+                    {
+                        field: 'isLocked', title: '是否锁定', templet: function (d) {
+                            return d['isLocked'] === 0 || d['isLocked'] === 1 ? '是' : '否';
+                        }
+                    },
+                    {fixed: 'right', title: '操作', toolbar: '#rowBar', width: 200}
+                ]],
+                toolbar: true,
+                page: true,
+                limits: [10, 20, 50, 100]
+            });
+            //20200518
+           // getClientList();
+            form.on('submit(searchForm)', function (data) {
+                searchTable.reload({
+                    where: {
+                        "keyword": $('.searchForm [name="keyword"]').val(),
+                        "type": $('.searchForm [name="type"]').val(),
+                        "roleId": $('.searchForm [name="roleId"]').val()
+                    },
+                    page: {curr: 1}
+                });
+                return false;
+            });
+
+            form.on('select(select-role)', function (data) {
+                if (roleZoneMap[data.value]) {
+                    showCommunity();
+                } else {
+                    hidenCommunity();
+                }
+                // if(data.value=='1138009280612933634'){
+                //     $(".companyId").css("display","");
+                // }else{
+                //     $(".companyId").css("display","none");
+                // }
+                return false;
+            });
+
+
+            $('.add').on('click', function () {
+                hidenCommunity();
+                layer.open({
+                    area: '450px',
+                    type: 1,
+                    title: '新增用户',
+                    content: $('.addPanel'),
+                    btn: ['确定', '取消'],
+                    yes: function (index) {
+                        var name = $('.addPanel [name="name"]').val();
+                        var password = $('.addPanel [name="password"]').val();
+                        var realName = $('.addPanel [name="realName"]').val();
+                        var roleId = $('.addPanel [name="roleId"]').val();
+                        var companyId = $('.addPanel [name="companyId"]').val();
+                        console.log("dd-"+$(".companyId").val());
+                        ajax("manage/admin/getDataForLogin", {"identifier": identifier}, function (publicKey) {
+                            ajax("manage/admin/addAdmin", {
+                                "name": name,
+                                "password": encrypt_rsa(name + '_' + password, publicKey),
+                                "realName": realName,
+                                "roleId": roleId,
+                                "identifier": identifier,
+                                "companyId":companyId
+                            }, function (data) {
+                                layer.close(index);
+                                layer.msg('操作成功');
+                                resetForm($('.addForm'));
+                                searchTable.reload();
+                            });
+                        });
+                    }
+                });
+            });
+            $('.addPanel [name="name"]').blur(function () {
+                var name = $(this).val();
+                if (!isBlank(name)) {
+                    ajax('manage/admin/isAdminExist', {name: name}, function (data) {
+                        if (data) {
+                            layer.msg('账号已存在');
+                        }
+                    });
+                }
+            });
+            //20200518
+          //  refreshRoleSelect();
+            table.on('tool', function (obj) {
+                var data = obj.data;
+                switch (obj.event) {
+                    case 'update':
+                        $('.updateForm [name="id"]').val(data.ID);
+                        $('.updateForm [name="name"]').val(data.NAME);
+                        $('.updateForm [name="realName"]').val(data['REAL_NAME']);
+                        $('.updateForm [name="roleId"]').val(data['ROLE_ID']);
+                        if (roleZoneMap[data['ROLE_ID']]) {
+                            showCommunity();
+                        }
+
+                        if (data['TYPE'] === 1 || data['TYPE'] === 2) {
+                            $('.updateForm [name="roleId"]').parents('.layui-form-item').hide();
+                        } else {
+                            $('.updateForm [name="roleId"]').parents('.layui-form-item').show();
+                        }
+                        form.render();
+                        layer.open({
+                            area: '450px',
+                            type: 1,
+                            title: '编辑用户',
+                            content: $('.updatePanel'),
+                            btn: ['确定', '取消'],
+                            yes: function (index) {
+                                ajax("manage/admin/updateAdmin", $('.updateForm').serializeArray(), function () {
+                                    layer.close(index);
+                                    layer.msg('操作成功');
+                                    resetForm($('.updateForm'));
+                                    searchTable.reload();
+                                });
+                            }
+                        });
+                        break;
+                    case 'password':
+                        layer.confirm('是否确认重置该用户密码?', function (index) {
+                            ajax("manage/admin/updateAdminPassword", {
+                                "id": data.ID
+                            }, function () {
+                                layer.msg('操作成功');
+                                searchTable.reload();
+                            });
+                        });
+                        break;
+                    case 'delete':
+                        layer.confirm('是否确认删除该用户?', function (index) {
+                            ajax("manage/admin/deleteAdmin", {
+                                "id": data.ID
+                            }, function () {
+                                layer.msg('操作成功');
+                                searchTable.reload();
+                            });
+                        });
+                        break;
+                }
+            });
+
+            function refreshRoleSelect() {
+                ajax('manage/role/getRoleList', null, function (roleList) {
+                    var roleElementListForAdd = [];
+                    var roleElementListForUpdate = [];
+                    var roleElementListForSearch = [];
+                    roleElementListForSearch.push($('<option value="">请选择角色</option>'));
+                    $.each(roleList, function (index, role) {
+                        roleElementListForAdd.push($('<option value=""></option>').text(role.name).attr('value', role.id));
+                        roleElementListForUpdate.push($('<option value=""></option>').text(role.name).attr('value', role.id));
+                        roleElementListForSearch.push($('<option value=""></option>').text(role.name).attr('value', role.id));
+                        roleZoneMap[role.id] = role.zone;
+                    });
+                    $('.addPanel [name="roleId"]').html(roleElementListForAdd);
+                    $('.updatePanel [name="roleId"]').html(roleElementListForUpdate);
+                    $('.searchForm [name="roleId"]').html(roleElementListForSearch);
+                    form.render();
+                });
+            }
+
+            function refreshCommunitySelect() {
+                ajax('manage/community/all', null, function (communityList) {
+                    var elementListForAdd = [];
+                    var elementListForUpdate = [];
+                    elementListForAdd.push($('<option value="">请选择社区</option>'));
+                    elementListForUpdate.push($('<option value="">请选择社区</option>'));
+                    $.each(communityList, function (index, item) {
+                        elementListForAdd.push($('<option value=""></option>').text(item.name).attr('value', item.id));
+                        elementListForUpdate.push($('<option value=""></option>').text(item.name).attr('value', item.id));
+                    });
+                    $('.addPanel [name="communityId"]').html(elementListForAdd);
+                    $('.updatePanel [name="communityId"]').html(elementListForUpdate);
+                    hidenCommunity();
+                    form.render();
+                });
+            }
+
+            function getClientList() {
+                $.ajax({
+                    url:"/xpro2/manage/upgradeClient/getAllListCanUse",
+                    type:"post",
+                    headers: {Authentication: localStorage.authentication},
+                    async:false,
+                    success:function(result) {
+                        var option = "<option value=''>---请选择---</option>";
+                        $.each(result.data,function(index,value){
+                            var str="<option value="+value.id+">"+value.name+"</option>";
+                            option+=str;
+                        });
+                        $(".client").html(option);
+                        form.render('select');
+                    }
+                });
+            }
+
+            function showCommunity() {
+                $(".community-container").show();
+            }
+
+            function hidenCommunity() {
+                $(".community-container").hide();
+            }
+        });
+    })();
+</script>
+</body>
+</html>
